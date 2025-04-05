@@ -23,12 +23,20 @@ export class Villager extends Phaser.Physics.Arcade.Sprite {
     // Set up physics properties
     this.setCollideWorldBounds(true);
     this.setGravityY(500);
+    this.body.setSize(24, 58); // Adjust the hitbox size
+    this.body.setOffset(4, 6); // Fine-tune hitbox position
 
     // Set depth to ensure villager appears on top of background
     this.setDepth(5);
 
     // Start in idle state
     this.setState("idle");
+
+    // Add collision with ground
+    const grounds = scene.children.list.filter(
+      (child) => child.texture && child.texture.key === "ground",
+    );
+    scene.physics.add.collider(this, grounds);
   }
 
   update() {

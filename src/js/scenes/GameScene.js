@@ -17,6 +17,18 @@ export class GameScene extends Phaser.Scene {
   }
 
   create() {
+    // Set world bounds
+    this.physics.world.setBounds(
+      0,
+      0,
+      this.worldSize,
+      this.cameras.main.height,
+    );
+
+    // Generate the map
+    this.mapGenerator = new MapGenerator(this);
+    this.mapGenerator.generate(this.worldSize);
+
     // Create the time system
     this.timeSystem = new TimeSystem(this, this.dayDuration);
 
@@ -26,18 +38,6 @@ export class GameScene extends Phaser.Scene {
     // Create building system
     this.buildingSystem = new BuildingSystem(this);
 
-    // Generate the map
-    this.mapGenerator = new MapGenerator(this);
-    this.mapGenerator.generate(this.worldSize);
-
-    // Set world bounds
-    this.physics.world.setBounds(
-      0,
-      0,
-      this.worldSize,
-      this.cameras.main.height,
-    );
-
     // Create player
     this.player = new Player(this, 400, this.cameras.main.height - 200);
 
@@ -46,7 +46,10 @@ export class GameScene extends Phaser.Scene {
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
 
     // Create initial villagers
-    this.villagers = this.add.group();
+    this.villagers = this.add.group({
+      classType: Villager,
+      runChildUpdate: true,
+    });
 
     // Castle is the starting building
     this.castle = this.buildingSystem.createBuilding(
@@ -66,7 +69,10 @@ export class GameScene extends Phaser.Scene {
     this.createUI();
 
     // Setup enemy spawning
-    this.enemies = this.add.group();
+    this.enemies = this.add.group({
+      classType: Enemy,
+      runChildUpdate: true,
+    });
     this.timeSystem.onNightStart(() => this.spawnEnemies());
 
     // Set up audio
@@ -88,6 +94,12 @@ export class GameScene extends Phaser.Scene {
       this.dayAmbient.stop();
       this.nightAmbient.play();
     });
+
+    // Add collision between player and ground
+    const grounds = this.children.list.filter(
+      (child) => child.texture && child.texture.key === "ground",
+    );
+    this.physics.add.collider(this.player, grounds);
 
     // Start with day
     this.dayAmbient.play();

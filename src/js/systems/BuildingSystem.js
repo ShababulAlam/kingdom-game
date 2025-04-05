@@ -65,6 +65,7 @@ export class BuildingSystem {
 
     // Set as immovable (doesn't get pushed)
     building.setImmovable(true);
+    building.body.allowGravity = false;
 
     // Add building properties
     building.type = type;
@@ -83,6 +84,12 @@ export class BuildingSystem {
 
     // Create health bar for the building
     building.healthBar = this.createHealthBar(building);
+
+    // Add collision with ground
+    const grounds = this.scene.children.list.filter(
+      (child) => child.texture && child.texture.key === "ground",
+    );
+    this.scene.physics.add.collider(building, grounds);
 
     return building;
   }

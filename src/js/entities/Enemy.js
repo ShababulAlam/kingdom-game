@@ -20,6 +20,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     // Set up physics properties
     this.setCollideWorldBounds(true);
     this.setGravityY(500);
+    this.body.setSize(32, 58); // Adjust the hitbox size
+    this.body.setOffset(8, 6); // Fine-tune hitbox position
 
     // Set depth to ensure enemy appears on top of background
     this.setDepth(5);
@@ -30,6 +32,12 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
     // Start the walking animation
     this.anims.play("enemy-walk", true);
+
+    // Add collision with ground
+    const grounds = scene.children.list.filter(
+      (child) => child.texture && child.texture.key === "ground",
+    );
+    scene.physics.add.collider(this, grounds);
   }
 
   update() {

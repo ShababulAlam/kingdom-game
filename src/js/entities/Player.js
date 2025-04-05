@@ -16,6 +16,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     // Set up physics properties
     this.setCollideWorldBounds(true);
     this.setGravityY(500);
+    this.body.setSize(40, 60); // Adjust the hitbox size
+    this.body.setOffset(12, 4); // Fine-tune hitbox position
 
     // Add horse
     this.horse = scene.add.sprite(x, y + 10, "horse");

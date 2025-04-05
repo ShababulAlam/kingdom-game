@@ -14,7 +14,7 @@ export class MapGenerator {
   createGround(worldSize) {
     // Create the ground as a series of ground tiles
     const groundHeight = 100;
-    const groundY = this.scene.cameras.main.height;
+    const groundY = this.scene.cameras.main.height - groundHeight;
     const groundTileWidth = 128; // Assuming ground.png is 128px wide
 
     const numTiles = Math.ceil(worldSize / groundTileWidth);
@@ -22,7 +22,8 @@ export class MapGenerator {
     for (let i = 0; i < numTiles; i++) {
       const ground = this.scene.add
         .image(i * groundTileWidth, groundY, "ground")
-        .setOrigin(0, 0);
+        .setOrigin(0, 0)
+        .setDisplaySize(groundTileWidth, groundHeight);
 
       // Add a collision body for the ground
       const groundBody = this.scene.physics.add.existing(ground, true);
@@ -31,6 +32,11 @@ export class MapGenerator {
 
       // Set depth so ground is below other elements
       ground.setDepth(1);
+    }
+
+    // Add a global collider for all entities with the ground
+    if (this.scene.player) {
+      this.scene.physics.add.collider(this.scene.player, ground);
     }
   }
 
@@ -114,7 +120,7 @@ export class MapGenerator {
       const waterWidth = Phaser.Math.Between(200, 400);
       const water = this.scene.add.image(
         x,
-        this.scene.cameras.main.height - 10,
+        this.scene.cameras.main.height - 100,
         "water",
       );
       water.setOrigin(0.5, 0);
@@ -125,7 +131,7 @@ export class MapGenerator {
       for (let i = 0; i < 10; i++) {
         const grassX =
           x + Phaser.Math.Between(-waterWidth / 2 - 20, waterWidth / 2 + 20);
-        const grassY = this.scene.cameras.main.height;
+        const grassY = this.scene.cameras.main.height - 100;
         const grassType = Math.random() > 0.5 ? "grass1" : "grass2";
 
         const grass = this.scene.add
